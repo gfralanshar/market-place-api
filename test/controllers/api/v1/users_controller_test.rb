@@ -28,4 +28,19 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
   end
+
+  test 'update the user if valid params' do
+    user_before_update = @user.email
+    patch api_v1_user_path(@user), params: {user: {email: "notoneagain@gmail.com"}}, as: :json
+    assert_response :success
+    @user.reload
+    user_after_update = @user.email
+
+    assert_not_same user_after_update, user_before_update
+  end
+
+  test 'not updating the user if invalid params' do
+    patch api_v1_user_path(@user), params: {user: {email: ""}}, as: :json
+    assert_response :unprocessable_entity
+  end
 end

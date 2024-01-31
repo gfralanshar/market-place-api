@@ -1,4 +1,6 @@
 class Api::V1::UsersController < ApplicationController
+  before_action :find_user, only: %i[show update]
+
 
   def show
     render json: User.find(params[:id])
@@ -14,7 +16,19 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def update
+    if @user.update(user_params)
+      render @user, status: :ok
+    else
+      render json: @user.errors, status: :unprocessable_entity
+    end
+  end
+
   private
+
+  def find_user
+    @user = User.find(params[:id])
+  end
 
   def user_params
     params.require(:user).permit(:email, :password)
